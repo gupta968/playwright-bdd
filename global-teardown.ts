@@ -39,6 +39,5 @@ export default async function globalTeardown() {
     console.log('');
   } catch (error) {
     console.error('❌ Error during global teardown:', error);
-    // Don't throw - we don't want email failure to fail the test run
   }
 }

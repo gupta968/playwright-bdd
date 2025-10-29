@@ -16,11 +16,10 @@ export class LoginPage extends BasePage {
         await this.page.locator('input[name="username"]').fill(username);
         console.log("Entered Username");
         await this.page.getByRole('button', { name: 'Next' }).click();
-        // await this.page.pause();
-        // await this.page.getByRole('textbox', { name: 'Username' }).click();
-        // await this.page.locator('input[name="username"]').fill(username);
-        // await this.page.getByPlaceholder('Password').click();
-        // await this.page.getByPlaceholder('Password').fill(password);
-        // await this.page.getByRole('button', { name: 'Sign On' }).click();
+        await this.page.getByRole('textbox', { name: 'Username' }).click();
+        await this.page.locator('input[name="username"]').fill(username);
+        await this.page.getByPlaceholder('Password').click();
+        await this.page.getByPlaceholder('Password').fill(password);
+        await this.page.getByRole('button', { name: 'Sign On' }).click();
     }
 }

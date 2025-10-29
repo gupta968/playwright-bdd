@@ -6,7 +6,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { sendEmailReport } from './utils/sendEmailReport';
+import { sendEmailReport } from './tests/UI_Tests/utils/sendEmailReport';
 
 interface PlaywrightTestResult {
   status: string;
