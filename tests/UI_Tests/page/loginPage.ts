@@ -14,6 +14,7 @@ export class LoginPage extends BasePage {
     async login(username: string, password: string) {
         await this.page.locator('input[name="username"]').click();
         await this.page.locator('input[name="username"]').fill(username);
+        console.log("Entered Username");
         await this.page.getByRole('button', { name: 'Next' }).click();
         await this.page.pause();
         await this.page.getByRole('textbox', { name: 'Username' }).click();
