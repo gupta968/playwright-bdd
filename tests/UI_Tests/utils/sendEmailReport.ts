@@ -75,14 +75,20 @@ export async function sendEmailReport() {
   if (fs.existsSync(detailedReportPath)) {
     console.log("✅ Using detailed test report (comprehensive data)");
     const report: DetailedReport = JSON.parse(fs.readFileSync(detailedReportPath, "utf-8"));
+    
+    // Quick calculation for subject line
+    const hasFailures = report.suites.some(suite => 
+      suite.tests.some(test => test.status === 'failed' || test.status === 'timedOut')
+    );
+    
     emailBody = generateUltimateEmailHTML(report);
     
     const date = new Date(report.summary.startTime).toLocaleDateString();
-    subject = `Solution Builder Test Report - ${date}`;
+    subject = `UI Automation Test Report - ${new Date().toLocaleDateString()}`;
   } else if (fs.existsSync(basicReportPath)) {
     console.log("⚠️ Detailed report not found, using basic test-results.json");
     emailBody = generateBasicEmailHTML(basicReportPath);
-    subject = `Solution Builder Test Report - ${new Date().toLocaleDateString()}`;
+    subject = `UI Automation Test Report - ${new Date().toLocaleDateString()}`;
   } else {
     console.error("❌ No test results found!");
     return;
@@ -96,7 +102,7 @@ function generateTestMatrixRows(suites: SuiteResult[]): string {
   let rowNumber = 1;
   const rows: string[] = [];
   
-  // Group tests by test case ID (file name)
+  // Group tests by test case ID (suite name or feature name)
   const testCaseMap = new Map<string, {
     testCaseId: string;
     tests: DetailedTestResult[];
@@ -106,10 +112,7 @@ function generateTestMatrixRows(suites: SuiteResult[]): string {
   
   suites.forEach(suite => {
     suite.tests.forEach(test => {
-      // Extract test case ID from file name (e.g., RIPA-14860 from the file path)
-      const fileNameMatch = test.file.match(/RIPA-\d+/);
-      const testCaseId = fileNameMatch ? fileNameMatch[0] : suite.suiteName || 'Unknown';
-      
+      let testCaseId = suite.suiteName;
       if (!testCaseMap.has(testCaseId)) {
         testCaseMap.set(testCaseId, {
           testCaseId,
@@ -123,11 +126,15 @@ function generateTestMatrixRows(suites: SuiteResult[]): string {
       testCase.tests.push(test);
       testCase.totalDuration += test.duration;
       
-      // Update overall status (failed takes precedence)
-      if (test.status === 'failed') {
+      // Update overall status (failed and timedOut take precedence)
+      if (test.status === 'failed' || test.status === 'timedOut') {
         testCase.overallStatus = 'failed';
       } else if (test.status === 'skipped' && testCase.overallStatus !== 'failed') {
         testCase.overallStatus = 'skipped';
+      } else if (test.status === 'flaky' && testCase.overallStatus === 'passed') {
+        testCase.overallStatus = 'flaky';
+      } else if (test.status === 'interrupted' && testCase.overallStatus === 'passed') {
+        testCase.overallStatus = 'interrupted';
       }
     });
   });
@@ -139,13 +146,24 @@ function generateTestMatrixRows(suites: SuiteResult[]): string {
     const statusText = testCase.overallStatus.toUpperCase();
     const durationText = (testCase.totalDuration / 1000).toFixed(2) + 's';
     
-    // Count scenarios
+    // Count scenarios by different statuses
     const totalScenarios = testCase.tests.length;
     const passedScenarios = testCase.tests.filter(t => t.status === 'passed').length;
-    const failedScenarios = testCase.tests.filter(t => t.status === 'failed').length;
+    const failedScenarios = testCase.tests.filter(t => t.status === 'failed' || t.status === 'timedOut').length;
     const skippedScenarios = testCase.tests.filter(t => t.status === 'skipped').length;
+    const flakyScenarios = testCase.tests.filter(t => t.status === 'flaky').length;
+    const interruptedScenarios = testCase.tests.filter(t => t.status === 'interrupted').length;
     
-    const scenarioText = `${totalScenarios} scenarios (${passedScenarios} passed, ${failedScenarios} failed, ${skippedScenarios} skipped)`;
+    let scenarioText = `${totalScenarios} scenario${totalScenarios !== 1 ? 's' : ''} (`;
+    const statusParts: string[] = [];
+    
+    if (passedScenarios > 0) statusParts.push(`${passedScenarios} passed`);
+    if (failedScenarios > 0) statusParts.push(`${failedScenarios} failed`);
+    if (skippedScenarios > 0) statusParts.push(`${skippedScenarios} skipped`);
+    if (flakyScenarios > 0) statusParts.push(`${flakyScenarios} flaky`);
+    if (interruptedScenarios > 0) statusParts.push(`${interruptedScenarios} interrupted`);
+    
+    scenarioText += statusParts.join(', ') + ')';
     
     // Alternate row colors for better readability
     const rowBg = rowNumber % 2 === 0 ? '#f8f9fa' : '#ffffff';
@@ -198,9 +216,13 @@ function generateUltimateEmailHTML(report: DetailedReport): string {
   
   suites.forEach(suite => {
     suite.tests.forEach(test => {
-      // Extract test case ID from file name (e.g., RIPA-14860)
-      const fileNameMatch = test.file.match(/RIPA-\d+/);
-      const testCaseId = fileNameMatch ? fileNameMatch[0] : suite.suiteName || 'Unknown';
+      // Use suite name as test case ID, fallback to title or extracted ID
+      let testCaseId = suite.suiteName;
+      
+      if (!testCaseId || testCaseId === 'Unknown') {
+        const fileNameMatch = test.file.match(/RIPA-\d+/);
+        testCaseId = fileNameMatch ? fileNameMatch[0] : test.title || 'Unknown Test';
+      }
       
       if (!testCaseMap.has(testCaseId)) {
         testCaseMap.set(testCaseId, {
@@ -213,11 +235,15 @@ function generateUltimateEmailHTML(report: DetailedReport): string {
       const testCase = testCaseMap.get(testCaseId)!;
       testCase.tests.push(test);
       
-      // Update overall status (failed takes precedence)
-      if (test.status === 'failed') {
+      // Update overall status (failed and timedOut take precedence)
+      if (test.status === 'failed' || test.status === 'timedOut') {
         testCase.overallStatus = 'failed';
       } else if (test.status === 'skipped' && testCase.overallStatus !== 'failed') {
         testCase.overallStatus = 'skipped';
+      } else if (test.status === 'flaky' && testCase.overallStatus === 'passed') {
+        testCase.overallStatus = 'flaky';
+      } else if (test.status === 'interrupted' && testCase.overallStatus === 'passed') {
+        testCase.overallStatus = 'interrupted';
       }
     });
   });
@@ -227,6 +253,8 @@ function generateUltimateEmailHTML(report: DetailedReport): string {
   const passedTestCases = Array.from(testCaseMap.values()).filter(tc => tc.overallStatus === 'passed').length;
   const failedTestCases = Array.from(testCaseMap.values()).filter(tc => tc.overallStatus === 'failed').length;
   const skippedTestCases = Array.from(testCaseMap.values()).filter(tc => tc.overallStatus === 'skipped').length;
+  const flakyTestCases = Array.from(testCaseMap.values()).filter(tc => tc.overallStatus === 'flaky').length;
+  const interruptedTestCases = Array.from(testCaseMap.values()).filter(tc => tc.overallStatus === 'interrupted').length;
   
   // Calculate start and end times
   const startTime = new Date(summary.startTime);
@@ -615,6 +643,12 @@ function generateUltimateEmailHTML(report: DetailedReport): string {
       border: 1px solid #dc3545;
     }
     
+    .status-badge.timedOut {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+      color: #856404;
+      border: 1px solid #ffc107;
+    }
+    
     .status-badge.skipped {
       background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
       color: #856404;
@@ -890,7 +924,7 @@ function generateUltimateEmailHTML(report: DetailedReport): string {
 <body>
   <div class="email-container">
     <div class="header">
-      <h1>Solution Builder Automation</h1>
+      <h1>Ui Test Automation</h1>
       <p class="subtitle">Comprehensive Test Execution Report</p>
       <p class="date">📅 ${executionDate}</p>
     </div>
@@ -907,8 +941,8 @@ function generateUltimateEmailHTML(report: DetailedReport): string {
             <th>Passed</th>
             <th>Failed</th>
             <th>Skipped</th>
-            ${(summary.flaky || 0) > 0 ? `<th>Flaky</th>` : ''}
-            ${(summary.notRun || 0) > 0 ? `<th>Not Run</th>` : ''}
+            ${(flakyTestCases > 0) ? `<th>Flaky</th>` : ''}
+            ${(interruptedTestCases > 0) ? `<th>Interrupted</th>` : ''}
             <th>Duration</th>
             <th>Pass Rate</th>
           </tr>
@@ -919,8 +953,8 @@ function generateUltimateEmailHTML(report: DetailedReport): string {
             <td class="stat-passed">${passedTestCases}</td>
             <td class="stat-failed">${failedTestCases}</td>
             <td class="stat-skipped">${skippedTestCases}</td>
-            ${(summary.flaky || 0) > 0 ? `<td style="color: #fd7e14; font-weight: 800;">${summary.flaky}</td>` : ''}
-            ${(summary.notRun || 0) > 0 ? `<td style="color: #6c757d; font-weight: 800;">${summary.notRun}</td>` : ''}
+            ${(flakyTestCases > 0) ? `<td style="color: #fd7e14; font-weight: 800;">${flakyTestCases}</td>` : ''}
+            ${(interruptedTestCases > 0) ? `<td style="color: #6c757d; font-weight: 800;">${interruptedTestCases}</td>` : ''}
             <td class="stat-duration">${durationInSeconds}s</td>
             <td class="stat-pass-rate">${passRate}%</td>
           </tr>
@@ -1220,8 +1254,8 @@ function getStatusIcon(status: string): string {
   switch (status) {
     case 'passed': return '✅';
     case 'failed': return '❌';
-    case 'skipped': return '⏭️';
     case 'timedOut': return '⏰';
+    case 'skipped': return '⏭️';
     case 'flaky': return '🔄';
     case 'interrupted': return '⛔';
     default: return '❓';
@@ -1243,9 +1277,13 @@ async function sendEmail(subject: string, emailBody: string) {
   console.log("📤 Sending email via SMTP...");
   
    let transporter = nodemailer.createTransport({
-        host: 'WEBMAIL.HONEYWELL.COM',
-        port: 25,
+        host: 'smtp.honeywell.com',
+        port: 587,
         secure: false,
+         auth: {
+      user: "nagendragupta.tunuguntla@honeywell.com",
+      pass: "Automation@2025",
+    }
     });
 
   const attachments = [];

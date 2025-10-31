@@ -5,7 +5,7 @@
     "forbidOnly": false,
     "fullyParallel": true,
     "globalSetup": "C:\\Users\\H502736\\Downloads\\gupta968\\playwright-bdd\\global-setup.ts",
-    "globalTeardown": "C:\\Users\\H502736\\Downloads\\gupta968\\playwright-bdd\\global-teardown.ts",
+    "globalTeardown": null,
     "globalTimeout": 0,
     "grep": {},
     "grepInvert": null,
@@ -94,7 +94,7 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "timedOut",
-                      "duration": 31561,
+                      "duration": 31436,
                       "error": {
                         "message": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
                         "stack": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at C:\\Users\\H502736\\Downloads\\gupta968\\playwright-bdd\\.features-gen\\tests\\UI_Tests\\features\\Login.feature.spec.js:6:8",
@@ -133,7 +133,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-10-29T10:05:57.328Z",
+                      "startTime": "2025-10-30T12:38:32.019Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -174,8 +174,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-10-29T10:05:54.010Z",
-    "duration": 46447.898,
+    "startTime": "2025-10-30T12:38:28.021Z",
+    "duration": 37787.185,
     "expected": 0,
     "skipped": 0,
     "unexpected": 1,

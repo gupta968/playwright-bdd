@@ -1,0 +1,203 @@
+{
+  "summary": {
+    "status": "failed",
+    "startTime": "2025-10-30T12:38:28.091Z",
+    "duration": 37826,
+    "totalTests": 1,
+    "executed": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "flaky": 0,
+    "interrupted": 0,
+    "notRun": 0
+  },
+  "suites": [
+    {
+      "suiteName": "Verify Login",
+      "file": "C:\\Users\\H502736\\Downloads\\gupta968\\playwright-bdd\\.features-gen\\tests\\UI_Tests\\features\\Login.feature.spec.js",
+      "tests": [
+        {
+          "testId": "a3f6739ed3c7959e8ad2-f3869662869faf520586",
+          "title": "create asset instance from UI",
+          "file": "Login.feature.spec.js",
+          "status": "timedOut",
+          "duration": 31436,
+          "retries": 0,
+          "isFlaky": false,
+          "errors": [
+            {
+              "message": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
+              "stack": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at C:\\Users\\H502736\\Downloads\\gupta968\\playwright-bdd\\.features-gen\\tests\\UI_Tests\\features\\Login.feature.spec.js:6:8",
+              "location": {
+                "file": "C:\\Users\\H502736\\Downloads\\gupta968\\playwright-bdd\\.features-gen\\tests\\UI_Tests\\features\\Login.feature.spec.js",
+                "column": 8,
+                "line": 6
+              }
+            },
+            {
+              "message": "Error: locator.click: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Username' })\u001b[22m\n",
+              "stack": "Error: locator.click: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Username' })\u001b[22m\n\n    at LoginPage.login (C:\\Users\\H502736\\Downloads\\gupta968\\playwright-bdd\\tests\\UI_Tests\\page\\loginPage.ts:19:68)\n    at Object.<anonymous> (C:\\Users\\H502736\\Downloads\\gupta968\\playwright-bdd\\tests\\UI_Tests\\steps\\login.steps.ts:9:3)\n    at C:\\Users\\H502736\\Downloads\\gupta968\\playwright-bdd\\.features-gen\\tests\\UI_Tests\\features\\Login.feature.spec.js:7:5",
+              "location": {
+                "file": "C:\\Users\\H502736\\Downloads\\gupta968\\playwright-bdd\\tests\\UI_Tests\\page\\loginPage.ts",
+                "column": 68,
+                "line": 19
+              }
+            }
+          ],
+          "steps": [
+            {
+              "title": "Before Hooks",
+              "category": "hook",
+              "duration": 31123,
+              "error": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m"
+            },
+            {
+              "title": "  Background: user is logged into the application",
+              "category": "hook",
+              "duration": 31121,
+              "error": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m"
+            },
+            {
+              "title": "    Fixture \"browser\"",
+              "category": "fixture",
+              "duration": 994
+            },
+            {
+              "title": "      Launch browser",
+              "category": "pw:api",
+              "duration": 980
+            },
+            {
+              "title": "    Fixture \"context\"",
+              "category": "fixture",
+              "duration": 96
+            },
+            {
+              "title": "      Create context",
+              "category": "pw:api",
+              "duration": 92
+            },
+            {
+              "title": "    Fixture \"page\"",
+              "category": "fixture",
+              "duration": 2808
+            },
+            {
+              "title": "      Create page",
+              "category": "pw:api",
+              "duration": 2805
+            },
+            {
+              "title": "    Fixture \"loginPage\"",
+              "category": "fixture",
+              "duration": 1
+            },
+            {
+              "title": "    Given User is logged into cwp portal",
+              "category": "test.step",
+              "duration": 27119,
+              "error": "Error: locator.click: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Username' })\u001b[22m\n"
+            },
+            {
+              "title": "      Navigate to \"/\"",
+              "category": "pw:api",
+              "duration": 4669
+            },
+            {
+              "title": "      Click locator('input[name=\"username\"]')",
+              "category": "pw:api",
+              "duration": 5332
+            },
+            {
+              "title": "      Fill \"h502736\" locator('input[name=\"username\"]')",
+              "category": "pw:api",
+              "duration": 24
+            },
+            {
+              "title": "      Click getByRole('button', { name: 'Next' })",
+              "category": "pw:api",
+              "duration": 131
+            },
+            {
+              "title": "      Click getByRole('textbox', { name: 'Username' })",
+              "category": "pw:api",
+              "duration": 16938,
+              "error": "Error: locator.click: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Username' })\u001b[22m\n"
+            },
+            {
+              "title": "After Hooks",
+              "category": "hook",
+              "duration": 1473
+            },
+            {
+              "title": "  Fixture \"loginPage\"",
+              "category": "fixture",
+              "duration": 0
+            },
+            {
+              "title": "  Fixture \"page\"",
+              "category": "fixture",
+              "duration": 0
+            },
+            {
+              "title": "  Fixture \"context\"",
+              "category": "fixture",
+              "duration": 1366
+            },
+            {
+              "title": "    Close context",
+              "category": "pw:api",
+              "duration": 1335
+            },
+            {
+              "title": "Worker Cleanup",
+              "category": "hook",
+              "duration": 1097
+            },
+            {
+              "title": "  Fixture \"browser\"",
+              "category": "fixture",
+              "duration": 1093
+            }
+          ],
+          "stdout": [
+            "Background step executed: User is logged into cwp portal\n",
+            "Entered Username\n"
+          ],
+          "stderr": [],
+          "attachments": [
+            {
+              "name": "screenshot",
+              "contentType": "image/png",
+              "path": "C:\\Users\\H502736\\Downloads\\gupta968\\playwright-bdd\\test-results\\tests-UI_Tests-features-Lo-20ff1-eate-asset-instance-from-UI-chromium\\test-failed-1.png"
+            },
+            {
+              "name": "video",
+              "contentType": "video/webm",
+              "path": "C:\\Users\\H502736\\Downloads\\gupta968\\playwright-bdd\\test-results\\tests-UI_Tests-features-Lo-20ff1-eate-asset-instance-from-UI-chromium\\video.webm"
+            },
+            {
+              "name": "error-context",
+              "contentType": "text/markdown",
+              "path": "C:\\Users\\H502736\\Downloads\\gupta968\\playwright-bdd\\test-results\\tests-UI_Tests-features-Lo-20ff1-eate-asset-instance-from-UI-chromium\\error-context.md"
+            }
+          ]
+        }
+      ],
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0,
+      "flaky": 0,
+      "interrupted": 0,
+      "total": 1,
+      "duration": 31436
+    }
+  ],
+  "config": {
+    "workers": 2,
+    "projects": [
+      "chromium"
+    ]
+  }
+}

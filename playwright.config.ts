@@ -23,7 +23,7 @@ const testDir = defineBddConfig({
 export default defineConfig({
   testDir,
    globalSetup: './global-setup.ts',
-   globalTeardown : './global-teardown.ts',
+  // globalTeardown : './global-teardown.ts',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
